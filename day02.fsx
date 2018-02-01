@@ -1,47 +1,27 @@
 //
-// (()) and ()() both result in floor 0.
-// ((( and (()(()( both result in floor 3.
-// ))((((( also results in floor 3.
-// ()) and ))( both result in floor -1 (the first basement level).
-// ))) and )())()) both result in floor -3
+// A present with dimensions of 2x3x4 requires 2*6 + 2*12 + 2*8 = 52 square feet of wrapping paper plus 6 square feet of slack, for a total of 58 square feet.
+// A present with dimensions of 1x1x10 requires 2*1 + 2*10 + 2*10 = 42 square feet of wrapping paper plus 1 square foot of slack, for a total of 43 square feet.
 //
 
-let changeFloor floor direction =
-    match direction with
-    | '(' -> floor + 1
-    | _ -> floor - 1
+let split (by : char) (input : string) =
+        input.Split(by)
 
-let santaPart1 input =
-    input |> Seq.fold changeFloor 0
+let paperNeeded (input : string) =
+    let parseDimensions (input : string) (splitBy : char) =
+        input |> split splitBy |> Array.map int
 
-santaPart1 "(())"
-santaPart1 "()()"
+    let [| length; width; height |] = parseDimensions input 'x'
+    let area1 = length * width
+    let area2 = width * height
+    let area3 = length * height
+    let area = 2*area1 + 2*area2 + 2*area3
+    let extraPaper = List.min [ area1; area2; area3 ]
+    area + extraPaper
 
-santaPart1 "((("
-santaPart1 "(()(()("
-santaPart1 "))((((("
-
-santaPart1 "())"
-santaPart1 "))("
-
-santaPart1 ")))"
-santaPart1 ")())())"
-
-open System.IO
-let file = Path.Combine(__SOURCE_DIRECTORY__, "day01.txt")
-let santaMovement = File.ReadAllText file
-
-santaPart1 santaMovement
-
-// ) causes him to enter the basement at character position 1.
-// ()()) causes him to enter the basement at character position 5.
-
-let santaPart2 s =
-    s
-    |> Seq.scan changeFloor 0
-    |> Seq.findIndex (fun n -> n = -1)
-
-santaPart2 ")"
-santaPart2 "()())"
-
-santaPart2 santaMovement
+paperNeeded "2x3x4"
+paperNeeded "1x1x10"
+paperNeeded "20x3x11"
+paperNeeded "15x27x5"
+paperNeeded "6x29x7"
+paperNeeded "30x15x9"
+paperNeeded "10x4x15"
