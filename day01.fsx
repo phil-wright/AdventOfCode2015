@@ -6,13 +6,14 @@
 // ))) and )())()) both result in floor -3
 //
 
-let changeFloor floor direction =
+let changeFloor direction =
     match direction with
-    | '(' -> floor + 1
-    | _ -> floor - 1
+    | '(' -> +1
+    | ')' -> -1
+    | _   -> failwith "invalid character"
 
 let santaPart1 input =
-    input |> Seq.fold changeFloor 0
+    input |> Seq.sumBy changeFloor
 
 santaPart1 "(())"
 santaPart1 "()()"
@@ -38,7 +39,8 @@ santaPart1 santaMovement
 
 let santaPart2 s =
     s
-    |> Seq.scan changeFloor 0
+    |> Seq.map changeFloor
+    |> Seq.scan (+) 0
     |> Seq.findIndex (fun n -> n = -1)
 
 santaPart2 ")"
